@@ -1,0 +1,395 @@
+{
+  "name": "Bitcoin Price in Google Sheets & Telegram Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        -96
+      ],
+      "id": "1ec45fee-8dbb-49ce-8426-02805571ffcc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        -96
+      ],
+      "id": "f71a79df-8082-40c5-8119-249992e2180f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "296cdb4b-6275-48d3-9262-1e6dc3c30fab",
+              "leftValue": "={{ $json.bitcoin.usd }}",
+              "rightValue": 60000,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "25544fe9-46df-45ff-a5fc-a02369c0e7d5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bea65223-94dc-4613-81fa-52bb30ea47ad",
+              "leftValue": "={{ $json.bitcoin.usd }}",
+              "rightValue": 70000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        144
+      ],
+      "id": "fcb366bd-1225-4978-aead-d482e4116717",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "7038665545",
+        "text": "=Цена биткоина {{ $json.bitcoin.usd }} Покупай",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        -112
+      ],
+      "id": "06c4ed55-7f85-4ed9-8025-ce1cc2ecdfdc",
+      "name": "ПРОДАВАЙ ДОРОГО",
+      "webhookId": "33b430a6-2308-48f5-b3f9-902bf1877370",
+      "credentials": {
+        "telegramApi": {
+          "id": "Ik4OciDZe4Rj8hID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7038665545",
+        "text": "=Цена биткоина {{ $json.bitcoin.usd }} продавай",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        48
+      ],
+      "id": "9b460feb-3e28-40ac-9d08-61ee3619b5d7",
+      "name": "ПОКУПАЙ ДЕШЕВО",
+      "webhookId": "33b430a6-2308-48f5-b3f9-902bf1877370",
+      "credentials": {
+        "telegramApi": {
+          "id": "Ik4OciDZe4Rj8hID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M",
+          "mode": "list",
+          "cachedResultName": "Цена Биткоина",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Дата": "={{ $now }}",
+            "Цена": "={{ $json.bitcoin.usd }}",
+            "Действие": "ПОКУПАЙ ДЕШЕВО"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Цена",
+              "displayName": "Цена",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Действие",
+              "displayName": "Действие",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        -272
+      ],
+      "id": "159d0b91-94ed-4ad5-b80a-5ad070d5cef8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7POIpea3zcmQG1ao",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M",
+          "mode": "list",
+          "cachedResultName": "Цена Биткоина",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EjbDEy1wzw-dE4SxrSIe_cgy1y5EhHrq58UNC7oED3M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Дата": "={{ $now }}",
+            "Цена": "={{ $json.bitcoin.usd }}",
+            "Действие": "=ПРОДАВАЙ ДОРОГО"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Цена",
+              "displayName": "Цена",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Действие",
+              "displayName": "Действие",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        208
+      ],
+      "id": "b37ead77-52cf-4651-9ca4-31d4a261e4d4",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7POIpea3zcmQG1ao",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ПРОДАВАЙ ДОРОГО",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ПОКУПАЙ ДЕШЕВО",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "ПРОДАВАЙ ДОРОГО": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "00fde528-8288-4e75-a052-0c7522bae514",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "302099109f48ca7c73567ef405af6749aaf490ffacee7ed17b5b4f39ff7f88ce"
+  },
+  "id": "I1uOj6gi0BBg4RxW",
+  "tags": []
+}
